@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Statistics">
+	<typeAlias alias="map" type="java.util.Map" />
+	<typeAlias alias="str" type="java.lang.String" />
+	<typeAlias alias="int" type="java.lang.Integer" />
+	<typeAlias alias="stat" type="spring.esla.beans.Statistics" />
+	<typeAlias alias="article" type="spring.esla.beans.Board" />
+
+	<select id="getStatistics" resultClass="stat" parameterClass="map"> 
+		select
+		        base tag,
+		        sum(DIC_BIOLOGY_CNT) DIC_BIOLOGY_CNT,
+		        sum(DIC_CHEMISTRY_CNT) DIC_CHEMISTRY_CNT,
+		        sum(DIC_EARTH_CNT) DIC_EARTH_CNT,
+		        sum(DIC_PHYSICS_CNT) DIC_PHYSICS_CNT, 
+		        nvl(sum(word_no),0) word_no,
+		        count(base) cnt
+		    from
+		        tags    
+		    where
+		        article_idx in (
+		            select
+		                idx      
+		            from
+		                article      
+		            where
+		                document_idx in (
+		                    select
+		                        idx 
+		                    from
+		                        document       start with idx = #doc_idx#      connect 
+		                    by
+		                        prior idx = par_idx     
+		                )   
+		            )   
+		            <isEqual prepend="and" property="isAllWord" compareValue="true">
+			            (
+			                DIC_BIOLOGY_CNT > 0    
+			                or DIC_CHEMISTRY_CNT > 0    
+			                or DIC_EARTH_CNT > 0    
+			                or DIC_PHYSICS_CNT > 0   
+			            ) 
+		            </isEqual>  
+		            
+		            <isNotNull prepend="and" property="part" removeFirstPrepend="true">
+			             part in (
+			            <isNotEmpty prepend="," property="bigPart">#bigPart#</isNotEmpty>
+			            <isNotEmpty prepend="," property="smallPart">#smallPart#</isNotEmpty>
+			            <isNotEmpty prepend="," property="pagePart">#pagePart#</isNotEmpty>
+			            <isNotEmpty prepend="," property="contentPart">#pagePart#</isNotEmpty>
+			            <isNotEmpty prepend="," property="actionPart">#actionPart#</isNotEmpty>
+			            <isNotEmpty prepend="," property="problemPart">#actionPart#</isNotEmpty>
+			            )
+			        </isNotNull>
+		            
+		        group by
+		            base 
+		        order by
+		            cnt desc  
+	</select>
+	
+	<select id="getWordDataToExcel" parameterClass="stat" resultClass="article">
+	select * from (
+	select
+		      *
+		    from
+		        VIEW_TAGS_WITH_METAINFO    
+		    where
+		        article_idx in (
+		            select
+		                idx      
+		            from
+		                article      
+		            where
+		                document_idx in (
+		                    select
+		                        idx 
+		                    from
+		                        document       start with idx = #doc_idx#     connect 
+		                    by
+		                        prior idx = par_idx     
+		                )   
+		            )  
+		<isNotEqual prepend="and" property="isAllWord" compareValue="true">
+	        (
+				DIC_BIOLOGY_CNT > 0 
+				or DIC_CHEMISTRY_CNT > 0    
+				or DIC_EARTH_CNT > 0    
+				or DIC_PHYSICS_CNT > 0  
+	        )
+        </isNotEqual>
+		<isNotNull prepend="and" property="part" removeFirstPrepend="true">
+		     part in (
+		    <isNotEmpty prepend="," property="bigPart">#bigPart#</isNotEmpty>
+		    <isNotEmpty prepend="," property="smallPart">#smallPart#</isNotEmpty>
+		    <isNotEmpty prepend="," property="pagePart">#pagePart#</isNotEmpty>
+		    <isNotEmpty prepend="," property="contentPart">#pagePart#</isNotEmpty>
+		    <isNotEmpty prepend="," property="actionPart">#actionPart#</isNotEmpty>
+		    <isNotEmpty prepend="," property="problemPart">#actionPart#</isNotEmpty>
+		    )
+		</isNotNull>
+		)
+		<isNotEqual property="isAllWord" compareValue="true">
+        where
+        1=0
+        </isNotEqual>
+        <isEqual prepend="or" property="ex_phy" compareValue="1">    
+         	(  DIC_PHYSICS_CNT > 0 and word_no = 0)
+        </isEqual>
+        <isEqual prepend="or" property="ex_bio" compareValue="1">   
+         	(  DIC_BIOLOGY_CNT > 0 and word_no = 0)
+         </isEqual>
+         <isEqual prepend="or" property="ex_ear" compareValue="1">   
+         	(  DIC_EARTH_CNT > 0 and word_no = 0)
+         </isEqual>
+         <isEqual prepend="or" property="ex_che" compareValue="1">   
+         	(  DIC_CHEMISTRY_CNT > 0 and word_no = 0)
+         </isEqual>
+         
+         <isEqual prepend="or" property="st_phy" compareValue="1">   
+         	(  DIC_PHYSICS_CNT > 0 and word_no != 0)
+         </isEqual>
+         <isEqual prepend="or" property="st_bio" compareValue="1">   
+         	(  DIC_BIOLOGY_CNT > 0 and word_no != 0)
+         </isEqual>
+         <isEqual prepend="or" property="st_ear" compareValue="1">   
+         	(  DIC_EARTH_CNT > 0 and word_no != 0)
+         </isEqual>
+         <isEqual prepend="or" property="st_che" compareValue="1">   
+         	(  DIC_CHEMISTRY_CNT > 0 and word_no != 0)
+         </isEqual>
+	</select>
+	
+	<select id="getWordBySearchWord" parameterClass="stat" resultClass="article">
+	  	select
+			      *
+			    from
+			        VIEW_TAGS_WITH_METAINFO    
+			    where
+			        article_idx in (
+			            select
+			                idx      
+			            from
+			                article      
+			            where
+			                document_idx in (
+			                    select
+			                        idx 
+			                    from
+			                        document       start with idx = #doc_idx#     connect 
+			                    by
+			                        prior idx = par_idx     
+			                )   
+			            )  
+	        and
+	        ( tag like #tag#
+	        	or base like #tag#
+	        )
+	</select>
+	
+	<select id="getSentenceByTagIdx" parameterClass="int" resultClass="str">
+		 select tag from tags
+		 where sentence =   (select  sentence from tags where idx = #value#)
+		 and article_idx = (select  article_idx from tags where idx = #value#)
+	</select>
+	
+	<select id="getNeighborListByTagIdx" parameterClass="int" resultClass="str">
+		 select base from tags where idx between ($value$)-5 and ($value$+5)
+	</select>
+	
+	<select id="getStaticLevelFourByTagIdx" parameterClass="int" resultClass="stat">
+		  select
+		     sys_connect_by_path(doc.val,'>') as path, doc.idx , level,
+		      (select
+				      count(*)
+				    from
+				        tags    
+				    where
+				        article_idx in (
+				            select
+				                idx      
+				            from
+				                article      
+				            where
+				                document_idx in (    
+		                      (select idx from document start with idx = doc.idx connect by prior idx = par_idx)    
+		                    )
+		            )
+		        and base = (select base from tags where idx = #value# )
+		        )as cnt
+		
+		  from
+		    document doc
+		  where
+		    level= 4
+		  start with idx = 0    
+		  connect by
+		      prior idx = par_idx 
+	</select>
+</sqlMap>

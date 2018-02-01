@@ -1,0 +1,143 @@
+@title	KIBSTAGS
+@version	v1.001
+@copyright	(C) kaist, 1995-2010
+@author	asdf
+@date	1996.7.11
+@editor	asdf
+
+TAG	sp		
+TAG	sf		
+TAG	sl		
+TAG	sr		
+TAG	sd		
+TAG	se		
+TAG	su		
+TAG	sy		
+
+TAG	f		
+
+TAG	ncpa	
+TAG	ncps	
+TAG	ncn		
+TAG	ncr		
+TAG	nqpa	
+TAG	nqpb	
+TAG	nqpc	
+TAG	nqq		
+TAG	nbu		
+TAG	nbn		
+TAG	nbs		
+TAG	npp		
+TAG	npd		
+TAG	nnc		
+TAG	nno		
+TAG	nq		
+
+TAG	ii		
+
+TAG	pvd		
+TAG	pvg		
+TAG	pad		
+TAG	paa		
+TAG	px		
+
+TAG	mmd		
+TAG	mma		
+TAG	mad		
+TAG	maj		
+TAG	mag		
+
+TAG	jcs		
+TAG	jco		
+TAG	jcc		
+TAG	jcm		
+TAG	jcv		
+TAG	jca		
+TAG	jcj		
+TAG	jct		
+TAG	jcr		
+TAG	jxc		
+TAG	jxf		
+TAG	jp		
+
+TAG	ep		
+TAG	ecc		
+TAG	ecs		
+TAG	ecx		
+TAG	etn		
+TAG	etm		
+TAG	ef		
+
+TAG	xp		
+TAG	xsnu	
+TAG	xsnca	
+TAG	xsncc	
+TAG	xsna	
+TAG	xsns	
+TAG	xsnp	
+TAG	xsnx	
+TAG	xsvv	
+TAG	xsva	
+TAG	xsvn	
+TAG	xsms	
+TAG	xsmn	
+TAG	xsam	
+TAG	xsas	
+TAG	iwg		
+TAG	unk		
+TAG	xsv		
+TAG	xsn
+TAG	xsm
+TAG	xsa
+
+TSET	s	sp sf sl sr sd se su sy
+TSET	nq	nqpa nqpb nqpc nqq
+TSET	nqp	nqpa nqpb nqpc
+TSET	n	ncpa ncps ncn ncr nq nbu nbn nbs npp npd nnc nno
+TSET	nc	ncpa ncps ncn ncr
+TSET	ncp	ncpa ncps
+TSET	nb	nbu nbn nbs
+TSET	np	npp npd
+TSET	nn	nnc nno
+TSET	p	pvd pvg pad paa px
+TSET	pv	pvd pvg
+TSET	pa	pad paa
+TSET	m	mmd mma mad maj mag
+TSET	mm	mmd mma
+TSET	ma	mad maj mag
+TSET	j	jcs jco jcc jcm jcv jca jcj jct jcr jp jxc jxf
+TSET	jc	jcs jco jcc jcm jcv jca jcj jct jcr
+TSET	jx	jxc jxf
+TSET	e	ep ecc ecs ecx etn etm ef
+TSET	ec	ecc ecs ecx
+TSET	et	etn etm
+TSET	xsnc	xsnca xsncc
+TSET	xsn	xsnu xsnc xsna xsns xsnp xsnx
+TSET	xsv	xsvv xsva xsvn
+TSET	xsm	xsms xsmn
+TSET	xsa	xsam xsas
+TSET	xs	xsn xsv xsm xsa
+TSET	x	xp xs
+TSET	all	s f n ii p m j e x unk
+TSET	index	nc nqpc nqq unk
+TSET	indey	xsncc xsnca
+TSET	unkset	ncn nqq
+
+IRR	irrb			
+IRR	irrs			
+IRR	irrd			
+IRR	irrh			
+IRR	irrlu			
+IRR	irrle			
+IRR	chmust			
+IRR	chnot			
+IRR	chmay			
+IRR	except			
+IRR	irrb_except		
+IRR	yut				
+IRR	gaet
+IRR	et
+IRR	si
+IRR	ss
+IRR	ssyut
+IRR	eu

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Board">
+	<typeAlias alias="map" type="java.util.Map" />
+	<typeAlias alias="str" type="java.lang.String" />
+	<typeAlias alias="int" type="java.lang.Integer" />
+	<typeAlias alias="article" type="spring.esla.beans.Board" />
+	<typeAlias alias="tree" type="spring.esla.beans.Tree" />
+
+	<select id="getArticleList" resultClass="article"> 
+		select * from ARTICLE  order by idx desc
+	</select>
+	<select id="getArticle" parameterClass="int" resultClass="article">
+		select * from ARTICLE  where idx = #value#
+	</select>
+	<delete id="deleteArticle" parameterClass="int">
+		delete from ARTICLE  where idx = #value#
+	</delete>
+	
+	<insert id="insertArticle" parameterClass="article">
+		<selectKey keyProperty="idx" resultClass="Integer">
+			select article_seq.nextval from dual
+		</selectKey>
+		INSERT INTO ARTICLE 
+		 	(IDX, TITLE, WRITER, REGDATE, COUNT, CONTENT, REGIP, FILENAME, PROCESS, GRADE, PUBLISHER, CHAPTER, PAGE, DOCUMENT_IDX)
+		 VALUES 
+		 	(#idx#, #title#, #writer#, sysdate, #count#, #content#, #regip#, #filename#, #process#, #grade#, #publisher#, #chapter#, #page#, #document_idx#)
+	
+	</insert>
+	<update id="setArticleCount" parameterClass="article">
+		update ARTICLE set count = #count# where idx = #idx#
+	</update>
+	
+	<insert id ="insertTags" parameterClass="article">
+		INSERT INTO TAGS 
+			(IDX, ARTICLE_IDX, TAG, SENTENCE, WORD, WORD_CLASS, BASE, PART, DIC_BIOLOGY_CNT, DIC_CHEMISTRY_CNT, DIC_EARTH_CNT, DIC_PHYSICS_CNT, WORD_NO, RESULT_COUNT, TECH_TERM_NAME, RESULT_STD_COUNT)
+		VALUES 
+			(tags_seq.nextval, #idx#, #tag#, #sentence#, #word#, #word_class#, #base#, #part#, #dic_biology_cnt#, #dic_chemistry_cnt#, #dic_earth_cnt#, #dic_physics_cnt#, #word_no#, #result_count#, #tech_term_name#, #result_std_count#)
+
+	</insert>
+	
+	<select id="getTagsByIdx" parameterClass="int" resultClass="article">
+		select * from tags where article_idx = #idx# order by sentence, word
+	</select>
+	
+	
+	<select id="getPageCountByDocumentIdx" parameterClass="int" resultClass="int">
+		select count(*) +1 from article where document_idx = #value#
+	</select>
+	
+	<select id="getTagsByDocumentIdxWithMetainfo" parameterClass="int" resultClass="article">
+		SELECT *
+		FROM VIEW_TAGS_WITH_METAINFO
+		WHERE article_idx IN
+		  (
+		  SELECT idx
+		  FROM article
+		  WHERE document_idx IN
+		    (SELECT idx
+		    FROM document
+		      START WITH idx       = #value#
+		      CONNECT BY prior idx = par_idx 
+		    )
+		  ) 
+		  order by idx
+	</select>
+</sqlMap>

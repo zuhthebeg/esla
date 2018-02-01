@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Board">
+	<typeAlias alias="map" type="java.util.Map" />
+	<typeAlias alias="str" type="java.lang.String" />
+	<typeAlias alias="int" type="java.lang.Integer" />
+	<typeAlias alias="article" type="spring.esla.beans.Board" />
+	<typeAlias alias="tree" type="spring.esla.beans.Tree" />
+
+	<select id="getProcessNodes" resultClass="tree">
+		select val, name, idx from document where par_idx = 0 order by class_order
+	</select>
+	
+	<select id="getChildNodeByIdx" parameterClass="int" resultClass="tree">
+		select idx, name, val, is_leaf from document where par_idx = #idx# order by class_order
+	</select>
+	
+	<select id="getMetainfoByDocumentIdx" parameterClass="int" resultClass="tree">
+		select * from document where idx = #value# order by class_order
+	</select>	
+	
+	<select id="getTitleByDocumentIdx" parameterClass="int" resultClass="tree">
+		select * from document where idx = 
+		(select par_idx from document where idx =#value#)
+	</select>
+	
+	<select id="getPublisherByDocumentIdx" parameterClass="int" resultClass="tree">
+		select * from document where idx = 
+		(select par_idx from document where idx = 
+		(select par_idx from document where idx =#value#))
+	</select>
+	
+	<select id="getGradeByDocumentIdx" parameterClass="int" resultClass="tree">
+		select * from document where idx = 
+		(select par_idx from document where idx = 
+		(select par_idx from document where idx = 
+		(select par_idx from document where idx =#value#)))
+	</select>
+	
+	<select id="getProcessByDocumentIdx" parameterClass="int" resultClass="tree">
+		select * from document where idx = 
+		(select par_idx from document where idx = 
+		(select par_idx from document where idx = 
+		(select par_idx from document where idx = 
+		(select par_idx from document where idx =#value#))))
+	</select>
+	
+	<select id="getPageListByDocumentIdx" parameterClass="int" resultClass="article">
+		select * from article where document_idx = #value# order by page desc
+	</select>
+	
+	<update id="updateNodeByIdx" parameterClass="tree">
+		update document set val = #val# where idx = #idx#
+	</update>
+	
+	<insert id="insertChildNode" parameterClass="tree">
+		INSERT INTO DOCUMENT 
+			(IDX, PAR_IDX, NAME, VAL, IS_LEAF, REGDATE, CLASS_ORDER) 
+		VALUES 
+			(document_seq.nextval, #par_idx#, #name#, #val#, #is_leaf#, sysdate, (select count(*) from document where par_idx = #par_idx#)+1) 
+	</insert>
+	
+	<select id="getDictionaryCountByBaseCount" parameterClass="map" resultClass="int">
+		select count(word) from $table$ where word like #baseWord#
+	</select>
+	
+	<delete id="deleteNodeAndChild" parameterClass="int">
+		delete document where idx in 
+		(select idx from document  
+		start with idx = #value#
+		connect by  prior idx = par_idx)
+	</delete>
+	
+	<!-- tag는 cascading으로 지워짐 -->
+	<delete id="deleteArticleByIdx" parameterClass="int">
+		delete from article where document_idx in 
+		(select idx from document  
+		where is_leaf = 'true' 
+		start with idx = #value#
+		connect by  prior idx = par_idx)
+	</delete>
+	
+	<select id="getChildNodeCount" parameterClass="int" resultClass="int">
+		select count(*) from document where par_idx = #value#
+	</select>
+	
+	<update id="swapNodeOrder" parameterClass="tree">
+		update document set class_order = (select class_order from document where idx = #swap_idx#) where idx = #idx#
+	</update>
+		
+	<update id="updateNodeOrder" parameterClass="tree">
+		update document set class_order = #class_order# where idx = #idx#
+	</update>
+</sqlMap>

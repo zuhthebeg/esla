@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+
+<tiles-definitions>
+	<definition name="mainLayout" template="/WEB-INF/view/layout/layout.jsp" >
+		<put-attribute name="title" 	value="교육용 과학언어 분석 프로그램" />
+		<put-attribute name="header" 	value="/WEB-INF/view/layout/header.jsp" />
+		<put-attribute name="left" 		value="/WEB-INF/view/layout/left.jsp" />
+		<put-attribute name="right" 	value="/WEB-INF/view/layout/right.jsp" />
+		<put-attribute name="footer" 	value="/WEB-INF/view/layout/footer.jsp" />
+	</definition>	
+	
+	<!-- =======================  main  ========== ================= --> 
+	<definition name="main" extends="mainLayout">
+		<put-attribute name="content" value="/WEB-INF/view/main.jsp" />
+	</definition>
+
+
+	<!-- =======================  ajax  ========== ================= --> 
+	<definition name="exception" 	template="/WEB-INF/view/exception.jsp" />
+	
+	<definition name="list" 		template="/WEB-INF/view/page/list.jsp" />
+	<definition name="ajaxList" 	template="/WEB-INF/view/page/ajaxList.jsp" />
+	<definition name="content" 		template="/WEB-INF/view/page/content.jsp" />
+	<definition name="tagList" 		template="/WEB-INF/view/page/tags.jsp" />
+	<definition name="excel" 		template="/WEB-INF/view/page/toExcel.jsp" />
+	
+	<definition name="doc_excel" 	template="/WEB-INF/view/page/toExcel2.jsp" />
+	<definition name="redirect2" 	template="/WEB-INF/view/page/redirect2.jsp" />
+	<definition name="write" 		template="/WEB-INF/view/page/write.jsp" />	
+	<definition name="json"			template="/WEB-INF/view/page/json.jsp"/>
+	
+	<definition name="extractResult" template="/WEB-INF/view/operation/extractResult.jsp" />	
+	<definition name="searchResult" template="/WEB-INF/view/operation/searchResult.jsp" />
+	<definition name="bigramResult" template="/WEB-INF/view/operation/bigramResult.jsp" />
+	
+	<!--  태크 관련 뷰  --> 
+	<definition name="kordicResult" template="/WEB-INF/view/page/kordicResult.jsp" />
+	
+	<!--  트리 관련 뷰  --> 
+	<definition name="manage"		template="/WEB-INF/view/page/manage.jsp" preparer="mapPrepare"/>
+	
+	<!--  통계 관련 뷰  --> 
+	<definition name="barChart"			template="/WEB-INF/view/statistics/barChart.jsp"/>
+	<definition name="pieChart"			template="/WEB-INF/view/statistics/pieChart.jsp"/>
+	<definition name="wordSearch"		template="/WEB-INF/view/statistics/wordSearch.jsp"/>
+	<definition name="wordSearchReslut"	template="/WEB-INF/view/statistics/searchResult.jsp"/>
+	<definition name="wordInfomation"	template="/WEB-INF/view/statistics/wordInfomation.jsp"/>
+		
+</tiles-definitions>

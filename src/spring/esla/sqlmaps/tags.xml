@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Tags">
+	<typeAlias alias="map" type="java.util.Map" />
+	<typeAlias alias="str" type="java.lang.String" />
+	<typeAlias alias="int" type="java.lang.Integer" />
+	<typeAlias alias="article" type="spring.esla.beans.Board" />
+	<typeAlias alias="definition" type="spring.esla.beans.Definition" />
+	<typeAlias alias="speechpart" type="spring.esla.beans.Speechpart" />
+	<typeAlias alias="dic" type="spring.esla.beans.KorDictionaryVO" />
+	
+	<update id="updateTagsWordNum" parameterClass="int">
+		update tags set word = word - 1 
+		where article_idx = (select article_idx from tags where idx = #value#)
+		and sentence = (select sentence from tags where idx = #value#)
+		and <![CDATA[ word > (select word from tags where idx = #value#) ]]> 
+	</update>
+	
+	<update id="updateTagsWordNumByAddition" parameterClass="article">
+		update tags set word = word + 1 
+		where article_idx = #idx#
+		and sentence = #sentence#
+		and <![CDATA[ word >= #word# ]]> 
+	</update>
+	
+	<delete id="deleteTagInfo"> 
+		delete from tags where idx = #value#
+	</delete>
+	
+	<update id="updateTagInfo" parameterClass="article">
+		update tags set
+			TAG			= #tag#,
+			SENTENCE	= #sentence#,
+			WORD		= #word#,
+			BASE		= #base#,
+			WORD_CLASS	= #word_class#,
+			PART		= #part#,
+			TECH_TERM_NAME = #tech_term_name#,
+			
+			<isEqual compareValue="dic_biology_cnt" property="dic_part">
+				dic_biology_cnt		= 1,
+			</isEqual>
+			<isNotEqual  compareValue="dic_biology_cnt" property="dic_part">
+				dic_biology_cnt		= 0,
+			</isNotEqual>
+			
+			<isEqual compareValue="dic_chemistry_cnt" property="dic_part">
+				dic_chemistry_cnt		= 1,
+			</isEqual>
+			<isNotEqual  compareValue="dic_chemistry_cnt" property="dic_part">
+				dic_chemistry_cnt		= 0,
+			</isNotEqual>
+			
+			<isEqual compareValue="dic_earth_cnt" property="dic_part">
+				dic_earth_cnt		= 1,
+			</isEqual>
+			<isNotEqual  compareValue="dic_earth_cnt" property="dic_part">
+				dic_earth_cnt		= 0,
+			</isNotEqual>
+			
+			<isEqual compareValue="dic_physics_cnt" property="dic_part">
+				dic_physics_cnt		= 1
+			</isEqual>
+			<isNotEqual  compareValue="dic_physics_cnt" property="dic_part">
+				dic_physics_cnt		= 0
+			</isNotEqual>
+		where idx = #idx#
+	</update>
+<!-- 바이그램 사용 전문용어집 검색 -->	
+	<select id="searchPhyDicByBigramText" parameterClass="list" resultClass="str">
+		select distinct word from dic_physics  
+		<iterate open="where" conjunction="or">
+			word like '%'||#[]#||'%'
+		</iterate>
+	</select>
+	
+	<select id="searchCheDicByBigramText" parameterClass="list" resultClass="str">
+		select distinct word from dic_chemistry 
+		<iterate open="where" conjunction="or">
+			word like '%'||#[]#||'%'
+		</iterate>
+	</select>
+	
+	<select id="searchBioDicByBigramText" parameterClass="list" resultClass="str">
+		select distinct word from dic_biology 
+		<iterate open="where" conjunction="or">
+			word like '%'||#[]#||'%'
+		</iterate>
+	</select>
+	
+	<select id="searchEarDicByBigramText" parameterClass="list" resultClass="str">
+		select distinct word from dic_earth 
+		<iterate open="where" conjunction="or">
+			word like '%'||#[]#||'%'
+		</iterate>
+	</select>
+<!-- 바이그램 사용 전문용어집 검색끝 -->
+
+<!-- 바이그램 미사용 전문용어집 검색 -->
+	<select id="searchPhyDicByText" parameterClass="str" resultClass="str">
+		select word from dic_physics  
+			where word like #value#
+	</select>
+	
+	<select id="searchCheDicByText" parameterClass="str" resultClass="str">
+		select word from dic_chemistry 
+		where word like #value#
+	</select>
+	
+	<select id="searchBioDicByText" parameterClass="str" resultClass="str">
+		select  word from dic_biology 
+		where word like #value#
+	</select>
+	
+	<select id="searchEarDicByText" parameterClass="str" resultClass="str">
+		select  word from dic_earth 
+		where word like #value#
+	</select>
+<!-- 바이그램 미사용 전문용어집 끝 -->		
+
+	<!-- 데이터 생성용 임시 -->
+	<insert id = "insertDefinitionDataByXml"  parameterClass="definition">
+		insert into definitions
+			(WORD_NO,SP_NO,PTRN_NO,DFN_NO,DFN_SEQ,PATTERN,GRAMMAR,WORD_GRP_CODE,TECH_TERM_CODE,DEFINITION,EXAMPLE,SPELLING_RULE,ADDITION)
+		values
+			(#word_no#,#sp_no#,#ptrn_no#,#dfn_no#,#dfn_seq#,#pattern#,#grammar#,#word_grp_code#,#tech_term_code#,#definition#,#example#,#spelling_rule#,#addition#)
+	</insert>
+	<insert id = "insertSpeechpartDataByXml"  parameterClass="speechpart">
+		insert into speechpart
+			(WORD_NO,SP_NO,SP_SEQ,SP_CODE,WORD_GRP_CODE,SPELLING_RULE,TECH_TERM_CODE,PATTERN,GRAMMAR,PATTERN_ETC)
+		values
+			(#word_no#,#sp_no#,#sp_seq#,#sp_code#,#word_grp_code#,#spelling_rule#,#tech_term_code#,#pattern#,#grammar#,#pattern_etc#)
+	</insert>	
+	
+	<insert id="insertCodeinfoDataByXml"   parameterClass="speechpart">
+		insert into codeinfo
+			(CODE_TYPE,CODE,CODE_NAME)
+		values
+			(#code_type#,#code#,#code_name#)
+	</insert>
+	
+	<select id="getDictionaryResult" parameterClass="str" resultClass="dic">
+		select * from VIEW_KOR_DICTIONARY where word = #value# order by tech_term_name
+	</select>
+	
+	<select id="getKorDicWordNominee" parameterClass="str" resultClass="dic">
+		select
+	     *
+	    from
+	        VIEW_KOR_DICTIONARY 
+	    where	    
+	    	tech_term_name in ('물리', '전기', '화학', '생물', '식물', '동물', '천문', '해양', '지리', '광업')
+	    and
+	        word =  #value#
+	    and rownum = 1
+	    order by
+	        tech_term_name
+
+	</select>
+	<select id="getTechTermNamesByWordNo" parameterClass="int" resultClass="str" >
+		select max(SYS_CONNECT_BY_PATH(t1.tech_term_name,' ')) t_name from 
+		(select word_no, tech_term_name, rownum rn  from VIEW_KOR_DICTIONARY where  word_no =  #value# )    t1  
+		START WITH t1.RN = 1
+		CONNECT BY PRIOR t1.RN = t1.RN-1
+	</select>
+	<select id="getKorDicWordCount" parameterClass="str" resultClass="int">
+		select
+	     nvl(count(distinct word_no), 0)
+	    from
+	        VIEW_KOR_DICTIONARY 
+	    where
+	    	tech_term_name is not null
+	    and
+	        word =  #value# 
+	</select>
+	<select id="getKorDicWordCountIsNull" parameterClass="str" resultClass="int">
+		select
+	     nvl(count(distinct word_no), 0)
+	    from
+	        VIEW_KOR_DICTIONARY 
+	    where
+	    	tech_term_name is null
+	    and
+	        word =  #value# 
+	</select>
+	<update id="updateWordNoByTagIdx" parameterClass="article" >
+		update tags set word_no = #word_no#, tech_term_name=#tech_term_name#, word_class=#word_class# where idx = #idx#
+	</update>
+</sqlMap>

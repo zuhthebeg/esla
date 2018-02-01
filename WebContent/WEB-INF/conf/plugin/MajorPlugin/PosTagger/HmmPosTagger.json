@@ -1,0 +1,31 @@
+{
+  "name": "HmmPosTagger",
+  "version": "1.0",
+  "author": [
+    {
+      "name": "asdf",
+      "email": "hudoni@gmail.com"
+    },
+    {
+      "name": "asdf",
+      "email": "cdh4696@gmail.com"
+    },
+    {
+      "name": "asdf",
+      "email": "null"
+    },
+    {
+      "name": "asdf",
+      "email": "null"
+    },
+    {
+      "name": "asdf",
+      "email": "null"
+    }
+  ],
+  "description": "asdf",
+  "type": "PosTagger",
+  "pwt.pos": "data/stat/PWT.pos",
+  "ptt.pos": "data/stat/PTT.pos",
+  "ptt.wp": "data/stat/PTT.wp"
+}
